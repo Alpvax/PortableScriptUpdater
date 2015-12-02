@@ -1,7 +1,9 @@
 {
     "AHKAutorun": {
-        "version": 1,
-        "path": "AutoHotkey/autorun.ahk",
-        "binary": "AutoHotkey/binaries/autorun.exe"
+        "Windows": {
+            "version": 1,
+            "path": "AutoHotkey/autorun.ahk",
+            "binary": "AutoHotkey/binaries/autorun.exe"
+        }
     }
 }
