@@ -2,20 +2,30 @@ import requests, json, platform, os, regex
 from tkinter import *
 from tkinter.ttk import *
 
-root = Tk()
-frameCount = 0
+class GuiWindow(Tk):
+    def __init__(self):
+        Tk.__init__(self)
+        self.resizable(True, False)
+        self.frames = 0
+    
+    def add(self, frame):
+        self.frames += 1
+        frame.grid(sticky="nwe")
+        self.rowconfigure(self.frames, weight=1)
+        self.columnconfigure(0, weight=1)
+        
+    def display(self):
+        if self.frames > 0:
+            Button(self, text="done").grid(sticky="s")
+            self.mainloop()
 
 class GuiUpdate(Labelframe):
-    def __init__(self, scriptName, script, current=None):
-        global root, frameCount
-        Labelframe.__init__(self, root, text=scriptName)
+    def __init__(self, master, scriptName, script, current=None):
+        Labelframe.__init__(self, master, text=scriptName)
         self.key = scriptName
         self.versions = script
         self.setupVars()
-        self.grid(sticky="nwe")
-        root.rowconfigure(frameCount, weight=1)
-        root.columnconfigure(0, weight=1)
-        frameCount += 1
+        master.add(self)
         self.createWidgets()
         
     def setupVars(self):
@@ -23,7 +33,7 @@ class GuiUpdate(Labelframe):
         self.typeVar = StringVar()
         self.updateVar = IntVar()
         if self.versions:
-            self.versionVar.set(self.versions.get("version", 1))
+            self.versionVar.set(self.versions.get("versions", 1))
         
     def createWidgets(self):
         i = 0
@@ -41,6 +51,7 @@ if __name__ == "__main__":
             userData = json.load(file)
     r = requests.get("https://raw.githubusercontent.com/Alpvax/PortableScriptUpdater/master/scripts.json")
     osName = platform.system()
+    root = GuiWindow()
     for key, scripts in json.loads(r.text).items():
         if osName in scripts: #Check script has a version for this OS
             script = scripts[osName]
@@ -48,8 +59,5 @@ if __name__ == "__main__":
             if key in userData:
                 print(userData[key])
             else:
-                f = GuiUpdate(key, script)
-                print(root)
-    if frameCount > 0:
-        Button(root, text="done").grid(sticky="s")
-        root.mainloop()
+                f = GuiUpdate(root, key, script)
+    root.display()
