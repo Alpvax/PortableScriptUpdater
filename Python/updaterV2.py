@@ -1,4 +1,4 @@
-import requests, json, platform, os, regex
+import requests, json, platform, os, argparse
 from tkinter import *
 from tkinter.ttk import *
 
@@ -60,8 +60,15 @@ class GuiUpdate(Labelframe):
             out[version] = {"current version": self.versions[version].get("version", -1), "update mode": self.versionVars[version].get()}
         return out
     
-def updateUserData(datapath, out):
-    print(out)
+def readData(datapath):
+    userData = {}
+    if os.path.isfile(datapath):
+        with open(datapath, 'r') as file:
+            userData = json.load(file)
+    return userData
+    
+def updateUserData(datapath, out, current=None):
+    current = out
     directory = os.path.dirname(datapath)
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -69,16 +76,43 @@ def updateUserData(datapath, out):
         json.dump(out, file, indent="\t", sort_keys=True)
 
 if __name__ == "__main__":
-    datapath = os.path.expanduser("~/.alpUpdater/scripts.conf")
-    userData = {}
-    if os.path.isfile(datapath):
-        with open(datapath, 'r') as file:
-            userData = json.load(file)
-    r = requests.get("https://raw.githubusercontent.com/Alpvax/PortableScriptUpdater/master/scripts.json")
-    osName = platform.system()
-    root = GuiWindow(lambda out: updateUserData(datapath, out))
-    for key, scripts in json.loads(r.text).items():
-        if osName in scripts: #Check script has a version for this OS
-            script = scripts[osName]
-            GuiUpdate(root, key, script, userData.get(key, None))
-    root.display()
+    parser = argparse.ArgumentParser(description="Check scripts for updates and update them if requested")
+    subparsers = parser.add_subparsers(title="commands")
+    
+    p_gui = subparsers.add_parser("gui", help="Open GUI version of program")
+    p_gui.set_defaults(which="gui")
+    
+    p_update = subparsers.add_parser("update", help="Download and update any scripts that require it")
+    p_update.set_defaults(which="update")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-n", "--no-prompt-deny", help="Don't prompt for and don't install updates which require acceptance", action="store_true")
+    group.add_argument("-y", "--no-prompt-accept", help="Don't prompt for and install updates which require acceptance", action="store_true")
+    p_update.add_argument("-f", "--force-update", help="Update or re-install scripts", action="store_true")
+    p_update.add_argument("-s", "--scripts", help="Scripts to install", nargs="+")
+    
+    p_update = subparsers.add_parser("install", help="Install new modules")
+    p_update.set_defaults(which="install")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-n", "--no-prompt-deny", help="Don't prompt for and don't install updates which require acceptance", action="store_true")
+    group.add_argument("-y", "--no-prompt-accept", help="Don't prompt for and install updates which require acceptance", action="store_true")
+    p_update.add_argument("-f", "--force-update", help="Update or re-install scripts", action="store_true")
+    p_update.add_argument("-s", "--scripts", help="Scripts to install", nargs="+")
+    
+    #parser.add_argument("-g", "--gui", help="Open GUI version of program", action="store_true")
+    #parser.add_argument("-u", "--update", help="Download and update any scripts that require it, as per settings", action="store_true")
+    #parser.add_argument("-q", "--quiet", help="Don't prompt for updates which require acceptance", nargs='?', choices=["Y","N","Yes","No"], const=False)
+    #parser.add_argument("-y", "--accept", help="Accept all upgrades without prompting", action="store_true")
+    args = vars(parser.parse_args())
+    print(args)
+    if args["which"] == "gui":
+        root = GuiWindow(lambda out: updateUserData(datapath, out, userData))
+    #datapath = os.path.expanduser("~/.alpUpdater/scripts.conf")
+    #userData = readData(datapath)
+    #r = requests.get("https://raw.githubusercontent.com/Alpvax/PortableScriptUpdater/master/scripts.json")
+    #osName = platform.system()
+    #root = GuiWindow(lambda out: updateUserData(datapath, out, userData))
+    #for key, scripts in json.loads(r.text).items():
+    #    if osName in scripts: #Check script has a version for this OS
+    #        script = scripts[osName]
+    #        GuiUpdate(root, key, script, userData.get(key, None))
+    #root.display()
