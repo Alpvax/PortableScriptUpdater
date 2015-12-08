@@ -1,0 +1,12 @@
+def getScript(scriptKey):
+    "Return a custom implementation of the custom_scripts.script.Script class"
+    return Script(scriptKey) #Default
+    
+def getCompatibleVersions(allVersions):
+    "Return an object with keyed versions"
+    plat = platform.system()
+    return allVersions[plat] if plat in allVersions else None #Default
+    
+def getCompatibleVersionNames(allVersions):
+    "Return a list of keys to return the versions for. Never used if 'getCompatibleVersions' is defined"
+    return ["Windows"] if platform.system() != "Windows" else None #Only return a version on Windows
