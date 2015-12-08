@@ -1,7 +1,20 @@
 import requests, json, os
+from custom_scripts import *
+from custom_scripts import Script
 
 DATA_PATH = os.path.expanduser(os.path.join("~", ".alpUpdater", "scripts.conf"))
 
+def getScript(key):
+    if key == None:
+        raise TypeError("Cannot find or create a Script with no key")
+    try:
+        script = eval(key)
+    except NameError as e:
+        if str(e) == "name '" + key + "' is not defined":
+            script = Script(key)
+            exec("global {0}\n{0} = script".format(key))
+    return script
+        
     
 def readCurrentData(datapath=DATA_PATH):
     userData = {}
@@ -23,15 +36,28 @@ def loadLatestData(url):
     
 def updateLatest(data):
     for key, allVersions in data.items():
-        script = eval(key)
+        script = getScript(key)
         s_vers = script.getVersion(allVersions)
         if s_vers:
             script.setLatest(s_vers)
-    
+        
+#def updateLatest(data, script=None, key=None):
+#    if (not script) and key:
+#        script = getScript(key)
+#    if script and script.key in data:
+#        _updateScriptVer(script, data[script.key])
+#    else:
+#        for key, allVersions in data.items():
+#            _updateScriptVer(allVersions, scriptKey=key)
+#def _updateScriptVer(script, allVersions):
+#    s_vers = script.getVersion(allVersions)
+#    if s_vers:
+#        script.setLatest(s_vers)
     
 def simpleMain():
-    updateLatest({"AHKAutorun": {"script": {"path": "AutoHotkey/autorun.ahk", "version": 1}, "binary": {"path": "AutoHotkey/binaries/autorun.exe", "version": 1}}})
+    #updateLatest({"AHKAutorun": {"script": {"path": "AutoHotkey/autorun.ahk", "version": 1}, "binary": {"path": "AutoHotkey/binaries/autorun.exe", "version": 1}}})
     print(AHKAutorun.getCompatibleVersions())
     
 if __name__ == "__main__":
+    loadLatestData("https://raw.githubusercontent.com/Alpvax/PortableScriptUpdater/master/scripts.json")
     simpleMain()
