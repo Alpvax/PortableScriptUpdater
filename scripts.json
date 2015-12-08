@@ -1,14 +1,12 @@
 {
     "AHKAutorun": {
-        "Windows": {
-            "script": {
-                "path": "AutoHotkey/autorun.ahk",
-                "version": 1
-            },
-            "binary": {
-                "path": "AutoHotkey/binaries/autorun.exe",
-                "version": 1
-            }
+        "script": {
+            "path": "AutoHotkey/autorun.ahk",
+            "version": 1
+        },
+        "binary": {
+            "path": "AutoHotkey/binaries/autorun.exe",
+            "version": 1
         }
     }
 }
