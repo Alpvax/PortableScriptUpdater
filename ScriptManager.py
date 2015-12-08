@@ -2,12 +2,6 @@ import requests, json, os
 
 DATA_PATH = os.path.expanduser(os.path.join("~", ".alpUpdater", "scripts.conf"))
 
-
-def getScriptVersion(key, currentData=None):
-    print(eval(key).getVersion(currentData))
-    #try:
-        #print(eval(key).getScript())
-    #except 
     
 def readCurrentData(datapath=DATA_PATH):
     userData = {}
@@ -38,11 +32,6 @@ def updateLatest(data):
 def simpleMain():
     updateLatest({"AHKAutorun": {"script": {"path": "AutoHotkey/autorun.ahk", "version": 1}, "binary": {"path": "AutoHotkey/binaries/autorun.exe", "version": 1}}})
     print(AHKAutorun.getCompatibleVersions())
-    #getScriptVersion("mod1", {"Windows": {"script": {"path": "AutoHotkey/autorun.ahk", "version": 1}, "binary": {"path": "AutoHotkey/binaries/autorun.exe", "version": 1}}})
     
 if __name__ == "__main__":
-    thisDir = None #Declare so it isn't listed as a difference
-    thisDir = dir()
-    from custom_scripts import *
-    print([f for f in dir() if f not in thisDir])
     simpleMain()
