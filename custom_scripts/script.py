@@ -14,8 +14,12 @@ class Script():
     def getCompatibleVersions(self):
         return self.latestVersions
         
+    def setCurrentVersion(self, data):
+        self.currentVersions = data
+        return self
+        
     def getCurrentVersion(self):
-        data = getCurrentData()
+        return self.currentVersions
         
     def __str__(self):
         return self.__class__.__name__ + ": " + self.key

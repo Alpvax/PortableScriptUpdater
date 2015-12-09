@@ -15,6 +15,10 @@ def getScript(key):
             exec("global {0}\n{0} = script".format(key))
     return script
         
+        
+def loadCurrentData(datapath=DATA_PATH):
+    for key, currentData in readCurrentData().items():
+        getScript(key).setCurrentVersion(currentData)
     
 def readCurrentData(datapath=DATA_PATH):
     userData = {}
@@ -40,6 +44,9 @@ def updateLatest(data):
         s_vers = script.getVersion(allVersions)
         if s_vers:
             script.setLatest(s_vers)
+            
+def _allScripts():
+    return [script for key, script in globals().items() if isinstance(script, Script)]
         
 #def updateLatest(data, script=None, key=None):
 #    if (not script) and key:
@@ -60,4 +67,6 @@ def simpleMain():
     
 if __name__ == "__main__":
     loadLatestData("https://raw.githubusercontent.com/Alpvax/PortableScriptUpdater/master/scripts.json")
+    loadCurrentData()
     simpleMain()
+    print([str(s) for s in _allScripts()])
